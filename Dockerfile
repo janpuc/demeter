@@ -15,16 +15,24 @@ ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PAT
 
 # Run flutter doctor
 RUN flutter doctor -v
+
 # Enable flutter web
 RUN flutter channel master
 RUN flutter upgrade
 RUN flutter config --enable-web
 
-# Copy files to container and build
+# Copy files to container
 RUN mkdir /app/
 COPY . /app/
 WORKDIR /app/
-RUN flutter test
+RUN flutter pub get
+
+# Run test and send code coverage
+RUN flutter analyze
+RUN flutter test --coverage
+RUN curl -s https://codecov.io/bash
+
+# Run build
 RUN flutter build web
 
 # Stage 2 - Create the run-time image
