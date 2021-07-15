@@ -1,6 +1,6 @@
 FROM vm/ubuntu:18.04
 
-SERCER ENV CODEDOV_TOKEN
+SECRET ENV CODEDOV_TOKEN
 
 # Install flutter dependencies
 RUN apt-get update
