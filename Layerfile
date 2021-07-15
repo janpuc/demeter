@@ -1,6 +1,5 @@
 FROM vm/ubuntu:18.04
 
-
 # Install flutter dependencies
 RUN apt-get update
 RUN apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6 libglu1-mesa fonts-droid-fallback lib32stdc++6 python3
@@ -15,6 +14,7 @@ RUN flutter doctor -v
 # Enable flutter web
 RUN flutter channel master
 RUN flutter upgrade
+RUN flutter config --enable-web
 
 # Copy files to VM
 RUN mkdir /app/
