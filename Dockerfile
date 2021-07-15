@@ -13,9 +13,6 @@ RUN git clone https://github.com/flutter/flutter.git /usr/local/flutter
 # RUN /usr/local/flutter/bin/flutter doctor -v
 ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
-# Set CodeCov env
-ENV CODECOV=${CODECOV}
-
 # Run flutter doctor
 RUN flutter doctor -v
 
@@ -33,7 +30,7 @@ RUN flutter pub get
 # Run test and send code coverage
 RUN flutter analyze
 RUN flutter test --coverage
-RUN curl -s https://codecov.io/bash -t $CODECOV
+RUN curl -s https://codecov.io/bash
 
 # Run build
 RUN flutter build web
