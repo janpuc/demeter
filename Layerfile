@@ -1,19 +1,28 @@
-#This is an example LayerCI configuration for Docker!
 FROM vm/ubuntu:18.04
 
-# To note: Layerfiles create entire VMs, *not* containers!
 
-# install the latest version of Docker, as in the official Docker installation tutorial.
-RUN apt-get update && \
-    apt-get install apt-transport-https ca-certificates curl software-properties-common && \
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
-    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable" && \
-    apt-get update && \
-    apt install docker-ce
+# Install flutter dependencies
+RUN apt-get update
+RUN apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6 libglu1-mesa fonts-droid-fallback lib32stdc++6 python3
+RUN apt-get clean
 
-# copy files from the repository into this staging server
-COPY . .
+# Set flutter path
+ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
-RUN docker build -t image .
-RUN docker run -d -p 80:80 image
-EXPOSE WEBSITE http://localhost:80
+# Run flutter doctor
+RUN flutter doctor -v
+
+# Enable flutter web
+RUN flutter channel master
+RUN flutter upgrade
+
+# Copy files to VM
+RUN mkdir /app/
+COPY . /app/
+WORKDIR /app/
+RUN flutter pub get
+
+# Run test and send code coverage
+RUN flutter analyze
+RUN flutter test --coverage
+RUN curl -s https://codecov.io/bash -t $CODECOV_TOKEN
